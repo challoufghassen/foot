@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0e5f2e; /* Football green */
+      --secondary-color: #1a2d40; /* Dark blue */
+      --accent-color: #e63946; /* Red accent */
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --success-color: #38b000;
+      --grass-color: #52b788;
+      --grass-dark: #40916c;
+    }
+
+    /* Header Styles */
+    .header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo-icon {
+      background-color: var(--primary-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+      padding: 5px 0;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .nav-links a.active {
+      color: white;
+      border-bottom: 2px solid var(--accent-color);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Custom elements */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 16rem;
+      background-color: rgb(15, 23, 42);
+      color: rgb(226, 232, 240);
+      z-index: 50;
+      transition: transform 0.3s ease-in-out;
+      overflow-y: auto;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .camera-preview {
+      background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+    }
+
+    .alert-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--danger);
+      color: white;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .status-active {
+      background-color: var(--secondary);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+    }
+
+    .status-inactive {
+      background-color: var(--gray);
+      box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.3);
+    }
+
+    .status-warning {
+      background-color: var(--warning);
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar-open {
+        transform: translateX(0);
+      }
+      .mobile-menu-btn {
+        display: block !important;
+      }
+    }
+
+    /* Footer Styles */
+    .footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 40px 0 20px;
+      margin-top: auto;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+    }
+    
+    .footer-section h3 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .footer-section p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 30px auto 0;
+      padding: 20px 20px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .footer-bottom p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.8rem;
+    }
+    
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .footer-bottom-links a {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: color 0.3s;
+    }
+    
+    .footer-bottom-links a:hover {
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .mobile-menu-open .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background-color: var(--secondary-color);
+        padding: 20px;
+        z-index: 100;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .footer-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .footer-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    /* Login Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .modal-header h2 {
+      color: var(--secondary-color);
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-header p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-form input {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .modal-form input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(14, 95, 46, 0.1);
+    }
+
+    .modal-form button {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .modal-form button:hover {
+      background-color: var(--grass-dark);
+    }
+
+    .error-message {
+      color: var(--accent-color);
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .back-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s;
+    }
+
+    .back-link a:hover {
+      color: var(--grass-dark);
+    }
+
+    .back-link i {
+      font-size: 0.8rem;
+    }
+
+    /* Main content adjustment */
+    .main-content {
+      margin-left: 16rem;
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Dashboard Access</h2>
+        <p>Please enter the admin password to continue</p>
+      </div>
+      <form id="loginForm" class="modal-form">
+        <input type="password" id="password" placeholder="Enter password" required>
+        <button type="submit">Login</button>
+        <div id="errorMessage" class="error-message">Incorrect password. Please try again.</div>
+      </form>
+      <div class="back-link">
+        <a href="home.html">
+          <i class="fas fa-arrow-left"></i>
+          Back to Check-In
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-futbol"></i>
+        </div>
+        <span>FootballManager</span>
+      </div>
+      
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="nav-links">
+        <a href="home.html">Check-In</a>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="p-4 flex items-center justify-between border-b border-slate-700">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+            <i class="fas fa-shield-alt text-white"></i>
+          </div>
+          <span class="font-bold text-lg">SecuriGuard</span>
+        </div>
+        <button id="sidebar-close" class="md:hidden text-slate-400 hover:text-white">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-4">
+        <div class="mb-8">
+          <div class="text-xs uppercase tracking-wider text-slate-400 mb-4 px-2">Main</div>
+          <nav>
+            <a href="#" class="nav-item flex items-center space-x-3 p-2 rounded-lg text-white bg-slate-800 mb-2 transition-colors">
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="fas fa-bell"></i>
+              </div>
+              <span>Alerts</span>
+              <div class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</div>
+            </a>
+            <a href="#" class="nav-item flex items-center space-x-3 p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 mb-2 transition-colors">
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="fas fa-users"></i>
+              </div>
+              <span>Players</span>
+            </a>
+            <a href="#" class="nav-item flex items-center space-x-3 p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 mb-2 transition-colors">
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="fas fa-video"></i>
+              </div>
+              <span>Cameras</span>
+            </a>
+            <a href="#" class="nav-item flex items-center space-x-3 p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 mb-2 transition-colors">
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <span>Analytics</span>
+            </a>
+          </nav>
+        </div>
+        <div class="mb-8">
+          <div class="text-xs uppercase tracking-wider text-slate-400 mb-4 px-2">System</div>
+          <nav>
+            <a href="#" class="nav-item flex items-center space-x-3 p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 mb-2 transition-colors">
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="fas fa-cog"></i>
+              </div>
+              <span>Settings</span>
+            </a>
+            <a href="#" class="nav-item flex items-center space-x-3 p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 mb-2 transition-colors">
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="fas fa-history"></i>
+              </div>
+              <span>Audit Log</span>
+            </a>
+          </nav>
+        </div>
+        <div class="mt-auto pt-4 border-t border-slate-700">
+          <div class="flex items-center space-x-3 p-2">
+            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
+              <i class="fas fa-user text-slate-300"></i>
+            </div>
+            <div>
+              <div class="font-medium">Admin User</div>
+              <div class="text-xs text-slate-400">Super Admin</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-btn" class="md:hidden fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col overflow-hidden main-content">
+      <!-- Top bar -->
+      <header class="bg-white shadow-sm z-40">
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-semibold text-slate-800">Security Dashboard</h1>
+            <div class="text-sm text-slate-500" id="current-date-time">Loading...</div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <button class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="notifications">
+                <i class="fas fa-bell"></i>
+                <div class="alert-badge">3</div>
+              </button>
+            </div>
+            <div class="relative">
+              <button class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="messages">
+                <i class="fas fa-envelope"></i>
+                <div class="alert-badge">1</div>
+              </button>
+            </div>
+            <div class="hidden md:block">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                  <i class="fas fa-user"></i>
+                </div>
+                <span class="font-medium">Admin</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main content area -->
+      <main class="flex-1 overflow-y-auto p-6 bg-slate-50">
+        <!-- Alerts Section -->
+        <section id="alerts-section" class="mb-8 dashboard-section">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-slate-800">Recent Security Alerts</h2>
+            <div class="flex space-x-2">
+              <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                <i class="fas fa-filter mr-2"></i> Filter
+              </button>
+              <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors flex items-center">
+                <i class="fas fa-cog mr-2"></i> Settings
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Alert Card 1 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-red-500 transition-all hover:shadow-lg">
+              <div class="p-5">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500 mr-3">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-slate-800">Unauthorized Access</h3>
+                      <p class="text-sm text-slate-500">Main Entrance</p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-slate-400">10 min ago</span>
+                </div>
+                <p class="text-slate-600 mb-4">Unknown individual attempted to access restricted area without proper credentials.</p>
+                <div class="flex space-x-2">
+                  <button class="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors">
+                    <i class="fas fa-ban mr-1"></i> Block
+                  </button>
+                  <button class="flex-1 px-3 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-eye mr-1"></i> View
+                  </button>
+                  <button class="px-3 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alert Card 2 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-yellow-500 transition-all hover:shadow-lg">
+              <div class="p-5">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500 mr-3">
+                      <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-slate-800">Suspicious Activity</h3>
+                      <p class="text-sm text-slate-500">Parking Lot</p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-slate-400">25 min ago</span>
+                </div>
+                <p class="text-slate-600 mb-4">Vehicle circling parking lot for extended period without parking.</p>
+                <div class="flex space-x-2">
+                  <button class="flex-1 px-3 py-2 bg-yellow-50 text-yellow-600 rounded-lg text-sm font-medium hover:bg-yellow-100 transition-colors">
+                    <i class="fas fa-flag mr-1"></i> Flag
+                  </button>
+                  <button class="flex-1 px-3 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-eye mr-1"></i> View
+                  </button>
+                  <button class="px-3 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alert Card 3 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-indigo-500 transition-all hover:shadow-lg">
+              <div class="p-5">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 mr-3">
+                      <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-slate-800">Late Night Access</h3>
+                      <p class="text-sm text-slate-500">Server Room</p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-slate-400">1 hour ago</span>
+                </div>
+                <p class="text-slate-600 mb-4">Employee accessing server room outside normal business hours.</p>
+                <div class="flex space-x-2">
+                  <button class="flex-1 px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors">
+                    <i class="fas fa-user-check mr-1"></i> Verify
+                  </button>
+                  <button class="flex-1 px-3 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-eye mr-1"></i> View
+                  </button>
+                  <button class="px-3 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Stats Section -->
+        <section id="players-section" class="mb-8 dashboard-section hidden">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6">Players Overview</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mb-3">
+                <i class="fas fa-users text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-800">Total Players</h3>
+              <div class="text-2xl font-bold mt-2">1,234</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-3">
+                <i class="fas fa-user-check text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-800">Active Now</h3>
+              <div class="text-2xl font-bold mt-2">89</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mb-3">
+                <i class="fas fa-user-plus text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-800">New Today</h3>
+              <div class="text-2xl font-bold mt-2">23</div>
+            </div>
+          </div>
+          <div class="mt-8 bg-white rounded-xl shadow-md p-6">
+            <h4 class="text-lg font-semibold mb-4">Recent Players</h4>
+            <ul>
+              <li class="flex items-center mb-4">
+                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mr-3">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-slate-800">John Doe</div>
+                  <div class="text-sm text-slate-500">Last active: 5 minutes ago</div>
+                </div>
+              </li>
+              <li class="flex items-center mb-4">
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-slate-800">Jane Smith</div>
+                  <div class="text-sm text-slate-500">Last active: 15 minutes ago</div>
+                </div>
+              </li>
+              <li class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mr-3">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div>
+                  <div class="font-medium text-slate-800">Mike Johnson</div>
+                  <div class="text-sm text-slate-500">Last active: 1 hour ago</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Camera Feed Section -->
+        <section id="cameras-section" class="mb-8 dashboard-section hidden">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-slate-800">Live Camera Feeds</h2>
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+              <i class="fas fa-expand mr-2"></i> Fullscreen
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Camera Card 1 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div class="relative">
+                <div class="camera-preview h-48 flex items-center justify-center">
+                  <i class="fas fa-video text-4xl text-slate-300"></i>
+                </div>
+                <div class="absolute top-3 left-3">
+                  <span class="status-indicator status-active"></span>
+                  <span class="text-xs font-medium text-white bg-black bg-opacity-50 px-2 py-1 rounded">LIVE</span>
+                </div>
+                <div class="absolute top-3 right-3">
+                  <button class="w-8 h-8 rounded-full bg-black bg-opacity-50 text-white flex items-center justify-center hover:bg-opacity-70 transition-colors" data-action="microphone">
+                    <i class="fas fa-microphone text-xs"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-semibold text-slate-800">Main Entrance</h3>
+                  <div class="flex space-x-2">
+                    <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="microphone">
+                      <i class="fas fa-microphone text-sm"></i>
+                    </button>
+                    <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="camera-settings">
+                      <i class="fas fa-cog text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-slate-500 mt-1">Camera ID: CAM-001</p>
+              </div>
+            </div>
+
+            <!-- Camera Card 2 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div class="relative">
+                <div class="camera-preview h-48 flex items-center justify-center">
+                  <i class="fas fa-video text-4xl text-slate-300"></i>
+                </div>
+                <div class="absolute top-3 left-3">
+                  <span class="status-indicator status-active"></span>
+                  <span class="text-xs font-medium text-white bg-black bg-opacity-50 px-2 py-1 rounded">LIVE</span>
+                </div>
+                <div class="absolute top-3 right-3">
+                  <button class="w-8 h-8 rounded-full bg-black bg-opacity-50 text-white flex items-center justify-center hover:bg-opacity-70 transition-colors" data-action="microphone">
+                    <i class="fas fa-microphone text-xs"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-semibold text-slate-800">Parking Lot</h3>
+                  <div class="flex space-x-2">
+                    <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="microphone">
+                      <i class="fas fa-microphone text-sm"></i>
+                    </button>
+                    <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="camera-settings">
+                      <i class="fas fa-cog text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-slate-500 mt-1">Camera ID: CAM-002</p>
+              </div>
+            </div>
+
+            <!-- Camera Card 3 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div class="relative">
+                <div class="camera-preview h-48 flex items-center justify-center">
+                  <i class="fas fa-video text-4xl text-slate-300"></i>
+                </div>
+                <div class="absolute top-3 left-3">
+                  <span class="status-indicator status-warning"></span>
+                  <span class="text-xs font-medium text-white bg-black bg-opacity-50 px-2 py-1 rounded">LOW LIGHT</span>
+                </div>
+                <div class="absolute top-3 right-3">
+                  <button class="w-8 h-8 rounded-full bg-black bg-opacity-50 text-white flex items-center justify-center hover:bg-opacity-70 transition-colors" data-action="microphone">
+                    <i class="fas fa-microphone text-xs"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-semibold text-slate-800">Server Room</h3>
+                  <div class="flex space-x-2">
+                    <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="microphone">
+                      <i class="fas fa-microphone text-sm"></i>
+                    </button>
+                    <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors" data-action="camera-settings">
+                      <i class="fas fa-cog text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-slate-500 mt-1">Camera ID: CAM-003</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent Activity Section -->
+        <section id="analytics-section" class="mb-8 dashboard-section hidden">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6">Analytics</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mb-3">
+                <i class="fas fa-chart-line text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-800">Total Check-ins</h3>
+              <div class="text-2xl font-bold mt-2">5,678</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 mb-3">
+                <i class="fas fa-exclamation-triangle text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-800">Security Incidents</h3>
+              <div class="text-2xl font-bold mt-2">12</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-3">
+                <i class="fas fa-clock text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-800">System Uptime</h3>
+              <div class="text-2xl font-bold mt-2">99.9%</div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h4 class="text-lg font-semibold mb-4">Peak Activity Hours</h4>
+            <div class="text-slate-700">2PM - 6PM (last 7 days)</div>
+          </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings-section" class="mb-8 dashboard-section hidden">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6">Settings</h2>
+          <form class="bg-white rounded-xl shadow-md p-6 max-w-xl mx-auto">
+            <div class="mb-4">
+              <label class="block text-slate-700 font-semibold mb-2">System Name</label>
+              <input type="text" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" value="Security Admin Dashboard">
+            </div>
+            <div class="mb-4">
+              <label class="block text-slate-700 font-semibold mb-2">Alert Threshold</label>
+              <select class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option>Low</option>
+                <option selected>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="block text-slate-700 font-semibold mb-2">Notification Email</label>
+              <input type="email" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" value="admin@example.com">
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">Save Changes</button>
+          </form>
+        </section>
+
+        <!-- Audit Log Section -->
+        <section id="auditlog-section" class="mb-8 dashboard-section hidden">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6">Audit Log</h2>
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Timestamp</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">User</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">2023-06-15 14:32:45</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">admin</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Changed system settings</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">2023-06-15 13:58:10</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">john.doe</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Viewed camera feed</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">2023-06-15 13:42:33</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">mike.johnson</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Logged in</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>
+          <div class="logo-icon">
+            <i class="fas fa-futbol"></i>
+          </div>
+          FootballManager
+        </h3>
+        <p>The complete management solution for football clubs, teams, and organizations.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li>
+            <a href="home.html"><i class="fas fa-sign-in-alt"></i> Check-In</a>
+          </li>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Support</h3>
+        <ul class="footer-links">
+          <li>
+            <a href="#"><i class="fas fa-question-circle"></i> Help Center</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-book"></i> Documentation</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-headset"></i> Contact Support</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2023 FootballManager. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Update date and time
+    function updateDateTime() {
+      const now = new Date();
+      const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      };
+      document.getElementById('current-date-time').textContent = now.toLocaleDateString('en-US', options);
+    }
+    
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const sidebar = document.querySelector('.sidebar');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('sidebar-open');
+    });
+
+    sidebarClose.addEventListener('click', () => {
+      sidebar.classList.remove('sidebar-open');
+    });
+
+    // Navigation functionality
+    const sectionMap = {
+      'alerts': 'alerts-section',
+      'players': 'players-section',
+      'cameras': 'cameras-section',
+      'analytics': 'analytics-section',
+      'settings': 'settings-section',
+      'audit log': 'auditlog-section'
+    };
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Remove active class from all nav items
+        document.querySelectorAll('.nav-item').forEach(navItem => {
+          navItem.classList.remove('bg-slate-800', 'text-white');
+          navItem.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+        });
+        // Add active class to clicked item
+        this.classList.add('bg-slate-800', 'text-white');
+        this.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+        // Hide all sections
+        document.querySelectorAll('.dashboard-section').forEach(section => section.classList.add('hidden'));
+        // Show the selected section
+        const label = this.querySelector('span').textContent.trim().toLowerCase();
+        const sectionId = sectionMap[label];
+        if (sectionId) {
+          document.getElementById(sectionId).classList.remove('hidden');
+        }
+        // Hide sidebar on mobile after selection
+        if (window.innerWidth < 768) {
+          sidebar.classList.remove('sidebar-open');
+        }
+      });
+    });
+
+    // Simulate loading for stats
+    document.addEventListener('DOMContentLoaded', () => {
+      const statNumbers = document.querySelectorAll('.text-2xl.font-bold');
+      
+      statNumbers.forEach(stat => {
+        const originalText = stat.textContent;
+        stat.textContent = '0';
+        
+        let counter = 0;
+        const target = parseInt(originalText.replace(/,/g, ''));
+        const increment = target / 30;
+        
+        const timer = setInterval(() => {
+          counter += increment;
+          if (counter >= target) {
+            clearInterval(timer);
+            stat.textContent = originalText;
+          } else {
+            stat.textContent = Math.floor(counter).toLocaleString();
+          }
+        }, 20);
+      });
+
+      // Add event listeners to icon buttons
+      document.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          const action = this.getAttribute('data-action');
+          switch(action) {
+            case 'notifications':
+              alert('You have 3 new notifications!');
+              break;
+            case 'messages':
+              alert('You have 1 new message!');
+              break;
+            case 'microphone':
+              alert('Microphone feature coming soon!');
+              break;
+            case 'camera-settings':
+              alert('Camera settings feature coming soon!');
+              break;
+            default:
+              alert('Button clicked: ' + action);
+          }
+        });
+      });
+    });
+
+    // Password protection
+    const loginModal = document.getElementById('loginModal');
+    const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const mainContent = document.querySelector('.flex.h-screen');
+
+    // Hide main content initially
+    mainContent.style.display = 'none';
+
+    // Check if already logged in
+    if (sessionStorage.getItem('dashboardAccess') === 'granted') {
+      loginModal.style.display = 'none';
+      mainContent.style.display = 'flex';
+    }
+
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      
+      if (password === 'password123') {
+        sessionStorage.setItem('dashboardAccess', 'granted');
+        loginModal.style.display = 'none';
+        mainContent.style.display = 'flex';
+        errorMessage.style.display = 'none';
+      } else {
+        errorMessage.style.display = 'block';
+        document.getElementById('password').value = '';
+      }
+    });
+
+    // Add logout functionality to the header
+    const header = document.querySelector('.header-container');
+    const logoutBtn = document.createElement('button');
+    logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+    logoutBtn.style.cssText = 'color: white; background: none; border: none; cursor: pointer; margin-left: 20px;';
+    logoutBtn.addEventListener('click', function() {
+      sessionStorage.removeItem('dashboardAccess');
+      window.location.reload();
+    });
+    header.querySelector('.nav-links').appendChild(logoutBtn);
+
+    // Email notification functionality
+    async function sendAlertNotification(alertType, location, details) {
+      const email = document.querySelector('input[type="email"]').value;
+      
+      try {
+        const response = await fetch('http://localhost:3000/api/send-alert', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            alertType,
+            location,
+            details,
+            recipientEmail: email
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('Alert notification sent successfully!');
+        } else {
+          alert('Failed to send alert notification');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error sending alert notification');
+      }
+    }
+
+    // Add click handlers to alert buttons
+    document.querySelectorAll('.alert-card button').forEach(button => {
+      button.addEventListener('click', function() {
+        const alertCard = this.closest('.alert-card');
+        const alertType = alertCard.querySelector('h3').textContent;
+        const location = alertCard.querySelector('.text-sm.text-slate-500').textContent;
+        const details = alertCard.querySelector('.text-slate-600').textContent;
+        
+        sendAlertNotification(alertType, location, details);
+      });
+    });
+  </script>
+</body>
+</html>

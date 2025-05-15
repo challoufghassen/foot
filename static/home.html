@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Check-In</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0e5f2e; /* Football green */
+      --secondary-color: #1a2d40; /* Dark blue */
+      --accent-color: #e63946; /* Red accent */
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --success-color: #38b000;
+      --grass-color: #52b788;
+      --grass-dark: #40916c;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--dark-color), #2a2a5a);
+      color: var(--light-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Styles */
+    .header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo-icon {
+      background-color: var(--primary-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+      padding: 5px 0;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .nav-links a.active {
+      color: white;
+      border-bottom: 2px solid var(--accent-color);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+    
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      color: var(--light-color);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+    
+    .video-container {
+      position: relative;
+      margin: 25px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    video {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      transform: scaleX(-1); /* Mirror effect */
+    }
+    
+    .status-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: #ffbe0b;
+      box-shadow: 0 0 10px #ffbe0b;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    #result {
+      margin-top: 25px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .success {
+      background-color: rgba(6, 214, 160, 0.2) !important;
+      color: var(--success-color) !important;
+    }
+    
+    .error {
+      background-color: rgba(239, 71, 111, 0.2) !important;
+      color: var(--danger-color) !important;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--light-color);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h2 {
+        font-size: 1.8rem;
+      }
+      
+      #result {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Footer Styles */
+    .footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 40px 0 20px;
+      margin-top: auto;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+    }
+    
+    .footer-section h3 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .footer-section p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 30px auto 0;
+      padding: 20px 20px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .footer-bottom p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.8rem;
+    }
+    
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .footer-bottom-links a {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: color 0.3s;
+    }
+    
+    .footer-bottom-links a:hover {
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .mobile-menu-open .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background-color: var(--secondary-color);
+        padding: 20px;
+        z-index: 100;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .footer-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .footer-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-futbol"></i>
+        </div>
+        <span>FootballManager</span>
+      </div>
+      
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="nav-links">
+        <a href="home.html" class="active">Check-In</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>Face Check-In</h2>
+    <div class="video-container">
+      <video id="video" autoplay muted></video>
+      <div class="status-indicator"></div>
+    </div>
+    <div id="result"><span class="loading"></span> Initializing system...</div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>
+          <div class="logo-icon">
+            <i class="fas fa-futbol"></i>
+          </div>
+          FootballManager
+        </h3>
+        <p>The complete management solution for football clubs, teams, and organizations.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li>
+            <a href="home.html"><i class="fas fa-sign-in-alt"></i> Check-In</a>
+          </li>
+          <li>
+            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Support</h3>
+        <ul class="footer-links">
+          <li>
+            <a href="#"><i class="fas fa-question-circle"></i> Help Center</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-book"></i> Documentation</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-headset"></i> Contact Support</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2023 FootballManager. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const video = document.getElementById('video');
+    const resultDiv = document.getElementById('result');
+    let labeledDescriptors = [];
+
+    // Load camera
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        updateStatus('Camera activated');
+      } catch (error) {
+        updateStatus('Camera access denied', 'error');
+        console.error('Error accessing camera:', error);
+      }
+    }
+
+    // Load face-api.js models
+    async function loadModels() {
+      updateStatus('Loading recognition models...');
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+        await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+        updateStatus('Models loaded successfully');
+      } catch (error) {
+        updateStatus('Failed to load models', 'error');
+        console.error('Error loading models:', error);
+      }
+    }
+
+    // Fetch known players from backend
+    async function loadLabeledImages() {
+      updateStatus('Loading player database...');
+      try {
+        const response = await fetch('/api/faces');
+        const data = await response.json();
+        
+        return data.map(player => {
+          const descriptors = player.descriptors.map(d => new Float32Array(d));
+          return new faceapi.LabeledFaceDescriptors(player.name, descriptors);
+        });
+      } catch (error) {
+        updateStatus('Failed to load player database', 'error');
+        console.error('Error loading player database:', error);
+        return [];
+      }
+    }
+
+    function updateStatus(message, type = '') {
+      resultDiv.innerHTML = message;
+      resultDiv.className = '';
+      if (type === 'success') {
+        resultDiv.classList.add('success');
+      } else if (type === 'error') {
+        resultDiv.classList.add('error');
+      }
+    }
+
+    async function run() {
+      await loadModels();
+      await startCamera();
+      
+      updateStatus('Connecting to player database...');
+      labeledDescriptors = await loadLabeledImages();
+      
+      if (labeledDescriptors.length === 0) {
+        updateStatus('No registered players found', 'error');
+        return;
+      }
+      
+      const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
+      updateStatus('System ready - looking for faces');
+
+      setInterval(async () => {
+        try {
+          const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks().withFaceDescriptors();
+
+          if (detections.length > 0) {
+            const bestMatch = faceMatcher.findBestMatch(detections[0].descriptor);
+            if (bestMatch.label !== 'unknown') {
+              updateStatus(`✅ Welcome, ${bestMatch.label}`, 'success');
+            } else {
+              updateStatus(`❌ Access Denied - Not Registered`, 'error');
+              fetch('/api/alert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ time: new Date().toISOString() })
+              });
+            }
+          } else {
+            // No face detected
+            updateStatus('Waiting for face detection...');
+          }
+        } catch (error) {
+          console.error('Detection error:', error);
+        }
+      }, 3000);
+    }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', run);
+
+    // Mobile menu toggle
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+      document.querySelector('.header-container').classList.toggle('mobile-menu-open');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Player Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0e5f2e; /* Football green */
+      --secondary-color: #1a2d40; /* Dark blue */
+      --accent-color: #e63946; /* Red accent */
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --success-color: #38b000;
+      --grass-color: #52b788;
+      --grass-dark: #40916c;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2352b788' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    /* Header Styles */
+    .header {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .logo-icon {
+      background-color: var(--primary-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+      padding: 5px 0;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .nav-links a.active {
+      color: white;
+      border-bottom: 2px solid var(--accent-color);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    /* Main Content Styles */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      flex: 1;
+    }
+    
+    .page-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .page-title h1 {
+      font-size: 2.2rem;
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .page-title h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+    
+    .page-title p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+    
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    
+    .tab-btn {
+      padding: 10px 20px;
+      background-color: #e9ecef;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .tab-btn:first-child {
+      border-radius: 5px 0 0 5px;
+    }
+    
+    .tab-btn:last-child {
+      border-radius: 0 5px 5px 0;
+    }
+    
+    .tab-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .registration-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+    }
+    
+    .card-header {
+      margin-bottom: 20px;
+    }
+    
+    .card-title {
+      font-size: 1.3rem;
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-title i {
+      color: var(--primary-color);
+    }
+    
+    .card-description {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    /* Camera Section Styles */
+    .camera-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    #camera {
+      width: 100%;
+      height: 300px;
+      border-radius: 10px;
+      object-fit: cover;
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      transform: scaleX(-1); /* Mirror effect */
+    }
+    
+    .camera-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      border: 2px dashed rgba(14, 95, 46, 0.3);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .camera-guide {
+      width: 180px;
+      height: 180px;
+      border: 2px dashed rgba(14, 95, 46, 0.7);
+      border-radius: 50%;
+    }
+    
+    .camera-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background-color: #e9ecef;
+      color: #495057;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .snapshot-container {
+      margin-top: 20px;
+      display: none;
+      text-align: center;
+    }
+    
+    #snapshot {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary-color);
+      display: block;
+      margin: 0 auto 15px;
+    }
+    
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(14, 95, 46, 0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    /* ID Card Styles */
+    .id-card-section {
+      grid-column: 1 / -1;
+      margin-top: 30px;
+      display: none;
+    }
+    
+    .id-card {
+      width: 350px;
+      height: 220px;
+      background: linear-gradient(135deg, var(--grass-dark), var(--secondary-color));
+      border-radius: 10px;
+      padding: 20px;
+      color: white;
+      position: relative;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    
+    .id-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    
+    .id-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .id-card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .id-card-logo {
+      font-size: 1.5rem;
+      color: var(--accent-color);
+    }
+    
+    .id-card-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .id-card-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid white;
+      object-fit: cover;
+    }
+    
+    .id-card-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 5px;
+    }
+    
+    .id-card-info p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 3px;
+    }
+    
+    .id-card-footer {
+      margin-top: 15px;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      text-align: center;
+    }
+    
+    .success-message {
+      text-align: center;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: rgba(56, 176, 0, 0.1);
+      color: var(--success-color);
+      border-radius: 5px;
+      font-weight: 500;
+    }
+    
+    .print-btn {
+      display: block;
+      margin: 20px auto 0;
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    /* Manage Players Tab */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+    
+    .empty-state p {
+      color: #666;
+      margin-bottom: 10px;
+    }
+    
+    /* Football Field Background for ID Card */
+    .field-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.1;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .field-line {
+      position: absolute;
+      background-color: white;
+    }
+    
+    .center-circle {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border: 2px solid white;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .center-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background-color: white;
+      top: 50%;
+      left: 0;
+    }
+    
+    .penalty-box-left {
+      position: absolute;
+      width: 60px;
+      height: 120px;
+      border: 2px solid white;
+      border-left: none;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+    
+    .penalty-box-right {
+      position: absolute;
+      width: 60px;
+      height: 120px;
+      border: 2px solid white;
+      border-right: none;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+    }
+    
+    /* Footer Styles */
+    .footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 40px 0 20px;
+      margin-top: 40px;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+    }
+    
+    .footer-section h3 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .footer-section p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 30px auto 0;
+      padding: 20px 20px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .footer-bottom p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.8rem;
+    }
+    
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .footer-bottom-links a {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: color 0.3s;
+    }
+    
+    .footer-bottom-links a:hover {
+      color: white;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .registration-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .id-card {
+        width: 100%;
+        max-width: 350px;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .mobile-menu-open .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background-color: var(--secondary-color);
+        padding: 20px;
+        z-index: 100;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .footer-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .footer-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-futbol"></i>
+        </div>
+        <span>FootballManager</span>
+      </div>
+      
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="nav-links">
+        <a href="home.html">Check-In</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="admin.html" class="active">Admin</a>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <div class="page-title">
+      <h1>Player Registration</h1>
+      <p>Register new players for facial recognition check-in</p>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="register">Register Player</button>
+      <button class="tab-btn" data-tab="manage">Manage Players</button>
+    </div>
+    
+    <div id="registerTab" class="tab-content active">
+      <div class="registration-container">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-camera"></i>
+              Capture Photo
+            </h2>
+            <p class="card-description">Take a clear photo of the player's face</p>
+          </div>
+          
+          <div class="camera-container">
+            <video id="camera" autoplay></video>
+            <div class="camera-overlay">
+              <div class="camera-guide"></div>
+            </div>
+          </div>
+          
+          <div class="camera-controls">
+            <button class="btn btn-secondary" id="switchCamera">
+              <i class="fas fa-sync"></i> Switch Camera
+            </button>
+            <button class="btn btn-primary" id="captureBtn">
+              <i class="fas fa-camera"></i> Capture Photo
+            </button>
+          </div>
+          
+          <div class="snapshot-container" id="snapshotContainer">
+            <canvas id="snapshot"></canvas>
+            <button class="btn btn-secondary" id="retakeBtn">
+              <i class="fas fa-redo"></i> Retake Photo
+            </button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-user-plus"></i>
+              Player Information
+            </h2>
+            <p class="card-description">Enter the player's details for registration</p>
+          </div>
+          
+          <form id="playerForm">
+            <div class="form-group">
+              <label for="playerName">Full Name</label>
+              <input type="text" id="playerName" class="form-control" required placeholder="Enter player's full name">
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="playerTeam">Team</label>
+                <input type="text" id="playerTeam" class="form-control" required placeholder="Enter team name">
+              </div>
+              
+              <div class="form-group">
+                <label for="playerPosition">Position</label>
+                <input type="text" id="playerPosition" class="form-control" placeholder="Enter player's position">
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="playerID">Player ID</label>
+                <input type="text" id="playerID" class="form-control" placeholder="Enter player ID number">
+              </div>
+              
+              <div class="form-group">
+                <label for="playerAccess">Access Level</label>
+                <select id="playerAccess" class="form-control">
+                  <option value="player">Player</option>
+                  <option value="coach">Coach</option>
+                  <option value="staff">Staff</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              <i class="fas fa-id-card"></i> Generate ID Card
+            </button>
+          </form>
+        </div>
+        
+        <div class="id-card-section card" id="idCardSection">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-id-card"></i>
+              Player ID Card
+            </h2>
+            <p class="card-description">Player has been successfully registered</p>
+          </div>
+          
+          <div class="id-card">
+            <!-- Football field background -->
+            <div class="field-background">
+              <div class="center-circle"></div>
+              <div class="center-line"></div>
+              <div class="penalty-box-left"></div>
+              <div class="penalty-box-right"></div>
+            </div>
+            
+            <div class="id-card-header">
+              <div class="id-card-title">Official Player</div>
+              <div class="id-card-logo"><i class="fas fa-shield-alt"></i></div>
+            </div>
+            
+            <div class="id-card-content">
+              <img id="cardPhoto" src="/placeholder.svg" alt="Player Photo" class="id-card-photo">
+              <div class="id-card-info">
+                <h3 id="cardName"></h3>
+                <p id="cardTeam"></p>
+                <p id="cardPosition"></p>
+                <p id="cardID"></p>
+              </div>
+            </div>
+            
+            <div class="id-card-footer">
+              Valid for 2023-2024 Season
+            </div>
+          </div>
+          
+          <div class="success-message">
+            <i class="fas fa-check-circle"></i> Player successfully registered for facial recognition!
+          </div>
+          
+          <button class="btn print-btn">
+            <i class="fas fa-print"></i> Print ID Card
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="manageTab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-users"></i>
+            Manage Registered Players
+          </h2>
+          <p class="card-description">View, edit, or remove registered players</p>
+        </div>
+        
+        <div class="empty-state">
+          <i class="fas fa-user-slash"></i>
+          <p>No players have been registered yet.</p>
+          <p>Register players using the Register Player tab.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>
+          <div class="logo-icon">
+            <i class="fas fa-futbol"></i>
+          </div>
+          FootballManager
+        </h3>
+        <p>The complete management solution for football clubs, teams, and organizations.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li>
+            <a href="#"><i class="fas fa-users"></i> Player Management</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-calendar"></i> Game Scheduling</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-shield-alt"></i> Team Registration</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-cog"></i> System Settings</a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Game Registration</h3>
+        <ul class="footer-links">
+          <li>
+            <a href="#"><i class="fas fa-plus-circle"></i> Register New Game</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Upcoming Fixtures</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-user-tie"></i> Match Officials</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> Venue Management</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-trophy"></i> Tournament Setup</a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Support</h3>
+        <ul class="footer-links">
+          <li>
+            <a href="#"><i class="fas fa-question-circle"></i> Help Center</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-book"></i> Documentation</a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-headset"></i> Contact Support</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2023 FootballManager. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+      document.querySelector('.header-container').classList.toggle('mobile-menu-open');
+    });
+    
+    // Tab switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        
+        // Remove active class from all buttons and contents
+        tabBtns.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Add active class to current button and content
+        this.classList.add('active');
+        document.getElementById(tabId + 'Tab').classList.add('active');
+      });
+    });
+    
+    // Camera setup
+    const video = document.getElementById('camera');
+    const canvas = document.getElementById('snapshot');
+    const snapshotContainer = document.getElementById('snapshotContainer');
+    let currentStream;
+    
+    // Start camera
+    async function startCamera(facingMode = 'user') {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+      
+      try {
+        const constraints = {
+          video: { facingMode: facingMode }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = stream;
+        currentStream = stream;
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        alert('Could not access the camera. Please ensure you have granted camera permissions.');
+      }
+    }
+    
+    // Switch camera
+    document.getElementById('switchCamera').addEventListener('click', function() {
+      const currentFacingMode = currentStream && currentStream.getVideoTracks()[0].getSettings().facingMode;
+      const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+      startCamera(newFacingMode);
+    });
+    
+    // Take a photo
+    document.getElementById('captureBtn').addEventListener('click', function() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      
+      // Flip the image horizontally if using front camera
+      if (currentStream && currentStream.getVideoTracks()[0].getSettings().facingMode === 'user') {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+      
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Create a circular crop
+      createCircularImage(canvas);
+      
+      snapshotContainer.style.display = 'block';
+    });
+    
+    // Create circular image
+    function createCircularImage(canvas) {
+      const ctx = canvas.getContext('2d');
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(canvas.width, canvas.height) / 2;
+      
+      // Save the current image
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      
+      // Clear the canvas and draw a circle
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.clip();
+      
+      // Draw the image back
+      ctx.putImageData(imageData, 0, 0);
+      ctx.restore();
+    }
+    
+    // Retake photo
+    document.getElementById('retakeBtn').addEventListener('click', function() {
+      snapshotContainer.style.display = 'none';
+    });
+    
+    // Generate the ID card
+    document.getElementById('playerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (snapshotContainer.style.display === 'none') {
+        alert('Please capture a photo first');
+        return;
+      }
+      
+      const name = document.getElementById('playerName').value;
+      const team = document.getElementById('playerTeam').value;
+      const position = document.getElementById('playerPosition').value || 'Player';
+      const id = document.getElementById('playerID').value || 'ID: ' + Math.floor(1000 + Math.random() * 9000);
+      
+      // Set ID card values
+      document.getElementById('cardPhoto').src = canvas.toDataURL();
+      document.getElementById('cardName').textContent = name;
+      document.getElementById('cardTeam').textContent = `Team: ${team}`;
+      document.getElementById('cardPosition').textContent = `Position: ${position}`;
+      document.getElementById('cardID').textContent = id;
+      
+      // Show ID card section
+      document.getElementById('idCardSection').style.display = 'block';
+      
+      // Scroll to ID card
+      document.getElementById('idCardSection').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Print ID card
+    document.querySelector('.print-btn').addEventListener('click', function() {
+      const idCardSection = document.getElementById('idCardSection');
+      const originalContents = document.body.innerHTML;
+      
+      // Create a printable version
+      const printContents = idCardSection.innerHTML;
+      document.body.innerHTML = `
+        <div style="padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+          ${printContents}
+        </div>
+      `;
+      
+      window.print();
+      
+      // Restore original content
+      document.body.innerHTML = originalContents;
+      
+      // Reinitialize event listeners and camera
+      initializeApp();
+    });
+    
+    // Initialize the app
+    function initializeApp() {
+      // Start camera
+      startCamera();
+      
+      // Reattach event listeners
+      document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+        document.querySelector('.header-container').classList.toggle('mobile-menu-open');
+      });
+      
+      document.getElementById('switchCamera').addEventListener('click', function() {
+        const currentFacingMode = currentStream && currentStream.getVideoTracks()[0].getSettings().facingMode;
+        const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+        startCamera(newFacingMode);
+      });
+      
+      document.getElementById('captureBtn').addEventListener('click', function() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        
+        if (currentStream && currentStream.getVideoTracks()[0].getSettings().facingMode === 'user') {
+          ctx.translate(canvas.width, 0);
+          ctx.scale(-1, 1);
+        }
+        
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        createCircularImage(canvas);
+        snapshotContainer.style.display = 'block';
+      });
+      
+      document.getElementById('retakeBtn').addEventListener('click', function() {
+        snapshotContainer.style.display = 'none';
+      });
+      
+      document.getElementById('playerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (snapshotContainer.style.display === 'none') {
+          alert('Please capture a photo first');
+          return;
+        }
+        
+        const name = document.getElementById('playerName').value;
+        const team = document.getElementById('playerTeam').value;
+        const position = document.getElementById('playerPosition').value || 'Player';
+        const id = document.getElementById('playerID').value || 'ID: ' + Math.floor(1000 + Math.random() * 9000);
+        
+        document.getElementById('cardPhoto').src = canvas.toDataURL();
+        document.getElementById('cardName').textContent = name;
+        document.getElementById('cardTeam').textContent = `Team: ${team}`;
+        document.getElementById('cardPosition').textContent = `Position: ${position}`;
+        document.getElementById('cardID').textContent = id;
+        
+        document.getElementById('idCardSection').style.display = 'block';
+        document.getElementById('idCardSection').scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      document.querySelector('.print-btn').addEventListener('click', function() {
+        const idCardSection = document.getElementById('idCardSection');
+        const originalContents = document.body.innerHTML;
+        
+        const printContents = idCardSection.innerHTML;
+        document.body.innerHTML = `
+          <div style="padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+            ${printContents}
+          </div>
+        `;
+        
+        window.print();
+        
+        document.body.innerHTML = originalContents;
+        initializeApp();
+      });
+      
+      // Tab switching
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const tabId = this.getAttribute('data-tab');
+          
+          tabBtns.forEach(btn => btn.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          
+          this.classList.add('active');
+          document.getElementById(tabId + 'Tab').classList.add('active');
+        });
+      });
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+</html>
